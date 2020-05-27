@@ -41,10 +41,29 @@ public class ClickListener : MonoBehaviour
 
 		ra.Raycast(eventData, list);
 
-		foreach (RaycastResult rr in list)
-		{
+		var raycast = FindFirstRaycast(list);
 
-			Debug.Log(rr.gameObject.name);
+		var go = ExecuteEvents.GetEventHandler<IEventSystemHandler>(raycast.gameObject);
+		if(go == null)
+		{
+			go = raycast.gameObject;
 		}
+
+		Debug.Log(go, go);
+	}
+
+	/// <summary>
+	/// Return the first valid RaycastResult.
+	/// </summary>
+	protected static RaycastResult FindFirstRaycast(List<RaycastResult> candidates)
+	{
+		for (var i = 0; i < candidates.Count; ++i)
+		{
+			if (candidates[i].gameObject == null)
+				continue;
+
+			return candidates[i];
+		}
+		return new RaycastResult();
 	}
 }

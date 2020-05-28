@@ -16,8 +16,52 @@ public class ClickListener : MonoBehaviour
 		{
 			return;
 		}
-		
 
+		GameObject go = null;
+
+		if (EventSystem.current.IsPointerOverGameObject())
+		{
+			go = ClickUI();
+		}
+		else
+		{
+			go = ClickScene();
+		}
+
+		if (go == null)
+		{
+			Debug.Log("Click Nothing");
+		}
+		else
+		{
+			EditorGUIUtility.PingObject(go);
+			Selection.activeObject = go;
+			Debug.Log(go, go);
+		}
+
+	}
+
+	/// <summary>
+	/// 点中场景中对象
+	/// </summary>
+	private GameObject ClickScene()
+	{
+		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+		RaycastHit hit;
+		if (Physics.Raycast(ray, out hit))
+		{
+			GameObject go = hit.collider.gameObject;
+			return go;
+		}
+
+		return null;
+	}
+
+	/// <summary>
+	/// 点中ui
+	/// </summary>
+	private GameObject ClickUI()
+	{
 		//场景中的EventSystem
 
 		PointerEventData eventData = new PointerEventData(EventSystem.current);
@@ -31,24 +75,14 @@ public class ClickListener : MonoBehaviour
 		var raycast = FindFirstRaycast(list);
 
 		var go = ExecuteEvents.GetEventHandler<IEventSystemHandler>(raycast.gameObject);
-		if(go == null)
+		if (go == null)
 		{
 			go = raycast.gameObject;
 		}
+		return go;
 
-		if(go == null)
-		{
-			Debug.Log("Click Nothing");
-		}
-		else
-		{
-			EditorGUIUtility.PingObject(go);
-			Selection.activeObject = go;
-			Debug.Log(go, go);
-		}
 		
 	}
-
 
 	/// <summary>
 	/// Return the first valid RaycastResult.
